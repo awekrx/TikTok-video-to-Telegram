@@ -46,15 +46,6 @@ bot.on("message", async (message) => {
 
 bot.on("inline_query", async (query) => {
     if (query.query.startsWith("https://vm.tiktok.com/" || "https://www.tiktok.com/")) {
-        bot.answerInlineQuery(query.id, [
-            {
-                id: 0,
-                type: "article",
-                title: "Finding...",
-                description: "Wait a minute...",
-                message_text: `{query.query}`,
-            },
-        ]);
         let url;
         if (query.query.startsWith("https://vm.tiktok.com/")) {
             url = await getLongURL(query.query);
