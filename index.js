@@ -103,5 +103,5 @@ bot.on("inline_query", async (query) => {
 });
 
 setInterval(() => {
-    axios.get(`$process.env.HOSTING}`, 10 * 60_000);
+    axios.get(`${process.env.HOSTING}`, 10 * 60_000);
 });
