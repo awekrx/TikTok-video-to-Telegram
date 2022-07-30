@@ -23,16 +23,26 @@ app.listen(process.env.PORT || 779);
 
 bot.on("message", async (message) => {
     if (message.text) {
-        if (message.text.startsWith("https://vm.tiktok.com/" || "https://www.tiktok.com/")) {
-            let url;
-            if (message.text.startsWith("https://vm.tiktok.com/")) {
-                url = await getLongURL(message.text);
+        try {
+            if (message.text.startsWith("https://vm.tiktok.com/" || "https://www.tiktok.com/")) {
+                let url;
+                if (message.text.startsWith("https://vm.tiktok.com/")) {
+                    url = await getLongURL(message.text);
+                } else {
+                    url = message.text;
+                }
+                let video = (await TikTokScraper.getVideoMeta(url)).collector[0].videoUrl;
+                bot.sendVideo(message.chat.id, video);
             } else {
-                url = message.text;
+                bot.sendMessage(
+                    message.chat.id,
+                    "<b>Send link on <a href='https://www.tiktok.com/'>TikTok</a> video</b>",
+                    {
+                        parse_mode: "HTML",
+                    },
+                );
             }
-            let video = (await TikTokScraper.getVideoMeta(url)).collector[0].videoUrl;
-            bot.sendVideo(message.chat.id, video);
-        } else {
+        } catch {
             bot.sendMessage(message.chat.id, "<b>Send link on <a href='https://www.tiktok.com/'>TikTok</a> video</b>", {
                 parse_mode: "HTML",
             });
@@ -46,27 +56,39 @@ bot.on("message", async (message) => {
 
 bot.on("inline_query", async (query) => {
     if (query.query.startsWith("https://vm.tiktok.com/" || "https://www.tiktok.com/")) {
-        let url;
-        if (query.query.startsWith("https://vm.tiktok.com/")) {
-            url = await getLongURL(query.query);
-        } else {
-            url = query.query;
+        try {
+            let url;
+            if (query.query.startsWith("https://vm.tiktok.com/")) {
+                url = await getLongURL(query.query);
+            } else {
+                url = query.query;
+            }
+            let res = (await TikTokScraper.getVideoMeta(url)).collector[0];
+            let video = res.videoUrl;
+            let image = res.imageUrl;
+            bot.answerInlineQuery(query.id, [
+                {
+                    id: 0,
+                    mime_type: "video/mp4",
+                    type: "video",
+                    title: "Video",
+                    description: `${url}`,
+                    hide_url: true,
+                    video_url: `${video}`,
+                    thumb_url: `${image}`,
+                },
+            ]);
+        } catch {
+            bot.answerInlineQuery(query.id, [
+                {
+                    id: 0,
+                    type: "article",
+                    title: "Video not found",
+                    description: "Send link on TikTok video",
+                    message_text: "Video not found :(\nSend link on TikTok video",
+                },
+            ]);
         }
-        let res = (await TikTokScraper.getVideoMeta(url)).collector[0];
-        let video = res.videoUrl;
-        let image = res.imageUrl;
-        bot.answerInlineQuery(query.id, [
-            {
-                id: 0,
-                mime_type: "video/mp4",
-                type: "video",
-                title: "Video",
-                description: `${url}`,
-                hide_url: true,
-                video_url: `${video}`,
-                thumb_url: `${image}`,
-            },
-        ]);
     } else {
         bot.answerInlineQuery(query.id, [
             {
@@ -78,4 +100,8 @@ bot.on("inline_query", async (query) => {
             },
         ]);
     }
+});
+
+setInterval(() => {
+    axios.get(`$process.env.HOSTING}`, 10 * 60_000);
 });
