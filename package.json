@@ -6,12 +6,12 @@
         "tiktok-scraper": "^1.4.36"
     },
     "name": "tiktok-video-to-telegram",
-    "version": "1.1.0",
+    "version": "1.0.0",
     "description": "A small project with which you can use the link to view the video without leaving the telegram",
     "main": "index.js",
     "scripts": {
         "start": "node index.js"
     },
     "author": "alladon",
-    "license": "ISC"
+    "license": "MIT"
 }
