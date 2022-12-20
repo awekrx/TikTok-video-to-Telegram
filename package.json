@@ -12,6 +12,6 @@
     "scripts": {
         "start": "node index.js"
     },
-    "author": "alladon",
+    "author": "awekrx",
     "license": "MIT"
 }
